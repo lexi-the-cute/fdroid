@@ -123,6 +123,18 @@ jobs:
           rm ${{ github.workspace }}/docs/fdroid/keystore.p12
           rm ${{ github.workspace }}/docs/fdroid/config.yml
 
+      # Create Docs Zip
+      - name: Create Docs Zip
+        run: |
+          mkdir -p ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/repo ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/srclibs ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
+
+          cd ${{ github.workspace }}/upload
+          zip -9 -y -r ${{ github.workspace }}/generated-docs.zip .
+
       # Delete Previous Release
       - name: 👩‍💻 Delete Previous Release
         continue-on-error: true
@@ -140,7 +152,7 @@ jobs:
           export DRAFT="false"
           export PRERELEASE="false"
           export LATEST="true"
-          export GENERATE_RELEASE_NOTES="false"
+          export GENERATE_RELEASE_NOTES="true"
 
           export BRANCH=`git branch --show-current --format="%s" | tr -d '\n'`
           # export COMMIT=`git log -1 --oneline | cut -d' ' -f1 | tr -d '\n'`
@@ -157,18 +169,6 @@ jobs:
             -F draft="$DRAFT" \
             -F prerelease="$PRERELEASE" \
             -F generate_release_notes="$GENERATE_RELEASE_NOTES" || echo "Already Exists"
-
-      # Create Docs Zip
-      - name: Create Docs Zip
-        run: |
-          mkdir -p ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/repo ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/srclibs ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
-
-          cd ${{ github.workspace }}/upload
-          zip -9 -y -r ${{ github.workspace }}/generated-docs.zip .
 
       # Publish to Github Release
       - name: 👩‍💻 Publish to Github Release
