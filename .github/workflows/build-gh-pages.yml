@@ -80,7 +80,7 @@ jobs:
       - name: Download Previously Generated Docs
         continue-on-error: true
         run: |
-          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-docs
+          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-docs.zip
           unzip ${{ github.workspace }}/downloaded-generated-docs.zip -d ${{ github.workspace }}/docs/fdroid
           rm ${{ github.workspace }}/downloaded-generated-docs.zip
 
