@@ -152,7 +152,7 @@ jobs:
           export DRAFT="false"
           export PRERELEASE="false"
           export LATEST="true"
-          export GENERATE_RELEASE_NOTES="true"
+          export GENERATE_RELEASE_NOTES="false"
 
           export BRANCH=`git branch --show-current --format="%s" | tr -d '\n'`
           # export COMMIT=`git log -1 --oneline | cut -d' ' -f1 | tr -d '\n'`
