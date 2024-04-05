@@ -69,16 +69,7 @@ jobs:
           packages: fdroidserver
           version: 1.0
           execute_install_scripts: true
-
-      # Download Generated Repos
-      - name: Download Generated Repos
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: Generated-Repos
-          path: ${{ github.workspace }}/docs/fdroid
         
-
       # Download Previously Generated Docs
       - name: Download Previously Generated Docs
         continue-on-error: true
@@ -137,6 +128,13 @@ jobs:
 
           cd ${{ github.workspace }}/upload
           zip -9 -y -r ../generated-docs.zip .
+
+      # Delete Previous Release
+      - name: 👩‍💻 Delete Previous Release
+        continue-on-error: true
+        run: |
+          export VERSION="1.0.0"
+          gh release delete --cleanup-tag v$VERSION -R ${{ github.repository }} -y
 
       # Create Tag and Github Release
       - name: 👩‍💻 Create Tag and Github Release
