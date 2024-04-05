@@ -57,12 +57,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # https://f-droid.org/docs/Setup_an_F-Droid_App_Repo
-      # https://f-droid.org/docs/Installing_the_Server_and_Repo_Tools
-      # Clone FDroidServer
-      # - name: Clone FDroidServer
-      #   run: git clone https://gitlab.com/fdroid/fdroidserver
-
       # Add FDroidServer Repo
       - name: Add FDroidServer Repo
         run: |
@@ -83,6 +77,15 @@ jobs:
         with:
           name: Generated-Repos
           path: ${{ github.workspace }}/docs/fdroid
+        
+
+      # Download Previously Generated Docs
+      - name: Download Previously Generated Docs
+        continue-on-error: true
+        run: |
+          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/generated-docs.zip
+          unzip ${{ github.workspace }}/generated-docs.zip -d ${{ github.workspace }}/docs/fdroid
+          rm ${{ github.workspace }}/generated-docs.zip
 
       # Write Secret Key
       - name: Write Secret Key
@@ -123,16 +126,54 @@ jobs:
           rm ${{ github.workspace }}/docs/fdroid/keystore.p12
           rm ${{ github.workspace }}/docs/fdroid/config.yml
 
-      # Upload Generated Repos
-      - name: Upload Generated Repos
-        uses: actions/upload-artifact@v4
-        with:
-          name: Generated-Repos
-          path: |
-            ${{ github.workspace }}/docs/fdroid/archive
-            ${{ github.workspace }}/docs/fdroid/repo
-            ${{ github.workspace }}/docs/fdroid/srclibs
-            ${{ github.workspace }}/docs/fdroid/tmp
+      # Create Docs Zip
+      - name: Create Docs Zip
+        run: |
+          mkdir ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/repo ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/srclibs ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
+
+          cd ${{ github.workspace }}/upload
+          zip -9 -y -r ../generated-docs.zip .
+
+      # Create Tag and Github Release
+      - name: 👩‍💻 Create Tag and Github Release
+        run: |
+          export VERSION="1.0.0"
+          export VERSION_STRING="Latest Build"
+          export BODY="This release exists purely for the Github Action for publishing pages"
+
+          export DRAFT="false"
+          export PRERELEASE="false"
+          export LATEST="true"
+          export GENERATE_RELEASE_NOTES="true"
+
+          export BRANCH=`git branch --show-current --format="%s" | tr -d '\n'`
+          # export COMMIT=`git log -1 --oneline | cut -d' ' -f1 | tr -d '\n'`
+
+          gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/releases \
+            -f tag_name="v$VERSION" \
+            -f target_commitish="$BRANCH" \
+            -f name="$VERSION_STRING" \
+            -f body="$BODY" \
+            -f make_latest="$LATEST" \
+            -F draft="$DRAFT" \
+            -F prerelease="$PRERELEASE" \
+            -F generate_release_notes="$GENERATE_RELEASE_NOTES" || echo "Already Exists"
+
+      # Publish to Github Release
+      - name: 👩‍💻 Publish to Github Release
+        run: |
+          export VERSION=1.0.0
+          export ARTIFACT_PATH="${{ github.workspace }}/generated-docs.zip"
+          export DISPLAY_LABEL="x86_64 Linux Zip"
+
+          gh release upload v$VERSION "$ARTIFACT_PATH"#"$DISPLAY_LABEL" -R ${{ github.repository }}
 
       # Setup Pages
       - name: Setup Pages
