@@ -63,12 +63,18 @@ jobs:
       # - name: Clone FDroidServer
       #   run: git clone https://gitlab.com/fdroid/fdroidserver
 
-      # Install FDroidServer
-      - name: Install FDroidServer
+      # Add FDroidServer Repo
+      - name: Add FDroidServer Repo
         run: |
           sudo add-apt-repository ppa:fdroid/fdroidserver
-          sudo apt-get update
-          sudo apt-get install fdroidserver
+
+      # Install Dependencies
+      - name: Install and Cache APT Packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: fdroidserver
+          version: 1.0
+          execute_install_scripts: true
 
       # Write Secret Key
       - name: Write Secret Key
