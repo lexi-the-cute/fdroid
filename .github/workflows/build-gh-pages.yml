@@ -123,18 +123,6 @@ jobs:
           rm ${{ github.workspace }}/docs/fdroid/keystore.p12
           rm ${{ github.workspace }}/docs/fdroid/config.yml
 
-      # Create Docs Zip
-      - name: Create Docs Zip
-        run: |
-          mkdir -p ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/repo ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/srclibs ${{ github.workspace }}/upload
-          cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
-
-          cd ${{ github.workspace }}/upload
-          zip -9 -y -r ${{ github.workspace }}/generated-docs.zip .
-
       # Delete Previous Release
       - name: 👩‍💻 Delete Previous Release
         continue-on-error: true
@@ -170,12 +158,24 @@ jobs:
             -F prerelease="$PRERELEASE" \
             -F generate_release_notes="$GENERATE_RELEASE_NOTES" || echo "Already Exists"
 
+      # Create Docs Zip
+      - name: Create Docs Zip
+        run: |
+          mkdir -p ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/repo ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/srclibs ${{ github.workspace }}/upload
+          cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
+
+          cd ${{ github.workspace }}/upload
+          zip -9 -y -r ${{ github.workspace }}/generated-docs.zip .
+
       # Publish to Github Release
       - name: 👩‍💻 Publish to Github Release
         run: |
           export VERSION="1.0.0"
           export ARTIFACT_PATH="${{ github.workspace }}/generated-docs.zip"
-          export DISPLAY_LABEL="x86_64 Linux Zip"
+          export DISPLAY_LABEL="Generated Docs"
 
           gh release upload v$VERSION "$ARTIFACT_PATH"#"$DISPLAY_LABEL" -R ${{ github.repository }}
 
