@@ -76,6 +76,14 @@ jobs:
           version: 1.0
           execute_install_scripts: true
 
+      # Download Generated Repos
+      - name: Download Generated Repos
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: Generated-Repos
+          path: ${{ github.workspace }}/docs/fdroid
+
       # Write Secret Key
       - name: Write Secret Key
         run: echo "${{ secrets.REPO_SIGNING_KEY }}" | base64 -d > ${{ github.workspace }}/docs/fdroid/keystore.p12
@@ -90,6 +98,19 @@ jobs:
           echo "${{ secrets.GPG_SIGNING_KEY }}" > $HOME/signing.gpg
           gpg --import $HOME/signing.gpg
 
+      # Download Android APK
+      - name: Download Android APK
+        run: |
+          mkdir -p ${{ github.workspace }}/docs/fdroid/repo
+          wget https://github.com/lexi-the-cute/catgirl-engine/releases/latest/download/CatgirlEngine-Android.zip -O ${{ github.workspace }}/catgirl-engine.zip
+          unzip ${{ github.workspace }}/catgirl-engine.zip catgirl-engine.apk -d ${{ github.workspace }}/docs/fdroid/repo
+
+      # Rename Android APK
+      - name: Rename Android APK
+        run: |
+          export VERSION=`export apkanalyzer manifest version-name ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine.apk`
+          mv ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine.apk ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine-v$VERSION.apk 
+
       # FDroid Update
       - name: FDroid Update
         run: |
@@ -101,6 +122,17 @@ jobs:
         run: |
           rm ${{ github.workspace }}/docs/fdroid/keystore.p12
           rm ${{ github.workspace }}/docs/fdroid/config.yml
+
+      # Upload Generated Repos
+      - name: Upload Generated Repos
+        uses: actions/upload-artifact@v4
+        with:
+          name: Generated-Repos
+          path: |
+            ${{ github.workspace }}/docs/fdroid/archive
+            ${{ github.workspace }}/docs/fdroid/repo
+            ${{ github.workspace }}/docs/fdroid/srclibs
+            ${{ github.workspace }}/docs/fdroid/tmp
 
       # Setup Pages
       - name: Setup Pages
