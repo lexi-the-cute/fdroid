@@ -78,7 +78,7 @@ jobs:
         
       # Download Previously Generated Docs
       - name: Download Previously Generated Docs
-        continue-on-error: true
+        continue-on-error: false
         run: |
           wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-docs.zip
           unzip ${{ github.workspace }}/downloaded-generated-docs.zip -d ${{ github.workspace }}/docs/fdroid
@@ -141,6 +141,7 @@ jobs:
         run: |
           export VERSION="1.0.0"
           gh release delete --cleanup-tag v$VERSION -R ${{ github.repository }} -y
+          sleep 5
 
       # Create Tag and Github Release
       - name: 👩‍💻 Create Tag and Github Release
