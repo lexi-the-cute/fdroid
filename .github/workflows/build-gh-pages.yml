@@ -167,7 +167,7 @@ jobs:
       # Publish to Github Release
       - name: 👩‍💻 Publish to Github Release
         run: |
-          export VERSION=1.0.0
+          export VERSION="1.0.0"
           export ARTIFACT_PATH="${{ github.workspace }}/generated-docs.zip"
           export DISPLAY_LABEL="x86_64 Linux Zip"
 
