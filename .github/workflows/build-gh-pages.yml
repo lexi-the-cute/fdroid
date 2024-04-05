@@ -66,7 +66,7 @@ jobs:
       - name: Install and Cache APT Packages
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: fdroidserver zip unzip
+          packages: fdroidserver
           version: 1.0
           execute_install_scripts: true
         
@@ -74,9 +74,9 @@ jobs:
       - name: Download Previously Generated Docs
         continue-on-error: true
         run: |
-          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/generated-docs.zip
-          unzip ${{ github.workspace }}/generated-docs.zip -d ${{ github.workspace }}/docs/fdroid
-          rm ${{ github.workspace }}/generated-docs.zip
+          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-docs
+          unzip ${{ github.workspace }}/downloaded-generated-docs.zip -d ${{ github.workspace }}/docs/fdroid
+          rm ${{ github.workspace }}/downloaded-generated-docs.zip
 
       # Write Secret Key
       - name: Write Secret Key
