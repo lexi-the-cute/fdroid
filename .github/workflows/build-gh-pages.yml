@@ -66,7 +66,7 @@ jobs:
       - name: Install and Cache APT Packages
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: fdroidserver
+          packages: fdroidserver zip unzip
           version: 1.0
           execute_install_scripts: true
         
@@ -127,7 +127,7 @@ jobs:
           cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
 
           cd ${{ github.workspace }}/upload
-          zip -9 -y -r ../generated-docs.zip .
+          zip -9 -y -r ${{ github.workspace }}/generated-docs.zip .
 
       # Delete Previous Release
       - name: 👩‍💻 Delete Previous Release
