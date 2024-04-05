@@ -1,0 +1,144 @@
+# Sample workflow for building and deploying a Jekyll site to GitHub Pages
+name: Deploy Github Pages Site
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  # Schedule occasional check
+  schedule:
+    - cron: "0 */6 * * *"
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    if: (!endsWith(github.event.head_commit.message, '--norun'))
+    runs-on: ubuntu-latest
+    environment: FDroid
+    steps:
+      # Setup Build Environment
+      - name: 🎉 The job was automatically triggered by a ${{ github.event_name }} event.
+        run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - name: 🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!
+        run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - name: 🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}.
+        run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: 💡 The ${{ github.repository }} repository has been cloned to the runner.
+        run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+
+      # Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Setup Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # https://f-droid.org/docs/Setup_an_F-Droid_App_Repo
+      # https://f-droid.org/docs/Installing_the_Server_and_Repo_Tools
+      # Clone FDroidServer
+      # - name: Clone FDroidServer
+      #   run: git clone https://gitlab.com/fdroid/fdroidserver
+
+      # Install FDroidServer
+      - name: Install FDroidServer
+        run: |
+          sudo add-apt-repository ppa:fdroid/fdroidserver
+          sudo apt-get update
+          sudo apt-get install fdroidserver
+
+      # Write Secret Key
+      - name: Write Secret Key
+        run: echo "${{ secrets.REPO_SIGNING_KEY }}" | base64 -d > ${{ github.workspace }}/docs/fdroid/keystore.p12
+
+      # Add Secrets to Config
+      - name: Add Secrets to Config
+        run: echo -e "\n${{ secrets.SECRET_CONFIG }}" >> ${{ github.workspace }}/docs/fdroid/config.yml
+
+      # Extract/Import GPG Signing Key
+      - name: Extract GPG Signing Key
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" > $HOME/signing.gpg
+          gpg --import $HOME/signing.gpg
+
+      # FDroid Update
+      - name: FDroid Update
+        run: |
+          cd ${{ github.workspace }}/docs/fdroid
+          fdroid update
+
+      # Remove Secret Key and Config
+      - name: Remove Secret Key and Config
+        run: |
+          rm ${{ github.workspace }}/docs/fdroid/keystore.p12
+          rm ${{ github.workspace }}/docs/fdroid/config.yml
+
+      # Setup Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # Make Site Directories
+      - name: Make Site Directories
+        run: |
+          mkdir -p ${{ github.workspace }}/docs
+          mkdir -p ${{ github.workspace }}/_site
+
+      # Build with Jekyll
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      # Upload artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+      # List Environment
+      - name: List Environment
+        run: env
+      - name: List All Installed Packages
+        run: |
+          apt list --installed | wc -l
+          apt list --installed
+      - name: List All Files
+        run: find ${{ github.workspace }}
+
+      # Display Build Status
+      - name: 🍏 This job's status is ${{ job.status }}.
+        run: echo "🍏 This job's status is ${{ job.status }}."
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # Deploy to Github Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

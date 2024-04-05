@@ -1,0 +1,8 @@
+# FDroid Server Tools
+fdroidserver/
+
+# Generated Site
+_site/
+
+# Secrets
+keystore.p12
