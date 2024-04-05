@@ -31,6 +31,8 @@ jobs:
     if: (!endsWith(github.event.head_commit.message, '--norun'))
     runs-on: ubuntu-latest
     environment: FDroid
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       # Setup Build Environment
       - name: 🎉 The job was automatically triggered by a ${{ github.event_name }} event.
