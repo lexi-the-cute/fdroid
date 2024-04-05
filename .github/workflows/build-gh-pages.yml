@@ -120,7 +120,7 @@ jobs:
       # Create Docs Zip
       - name: Create Docs Zip
         run: |
-          mkdir ${{ github.workspace }}/upload
+          mkdir -p ${{ github.workspace }}/upload
           cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
           cp -a ${{ github.workspace }}/docs/fdroid/repo ${{ github.workspace }}/upload
           cp -a ${{ github.workspace }}/docs/fdroid/srclibs ${{ github.workspace }}/upload
