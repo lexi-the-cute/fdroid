@@ -103,7 +103,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/docs/fdroid/repo
           wget https://github.com/lexi-the-cute/catgirl-engine/releases/latest/download/CatgirlEngine-Android.zip -O ${{ github.workspace }}/catgirl-engine.zip
-          unzip ${{ github.workspace }}/catgirl-engine.zip catgirl-engine.apk -d ${{ github.workspace }}/docs/fdroid/repo
+          unzip ${{ github.workspace }}/catgirl-engine.zip catgirl-engine-fat.apk -d ${{ github.workspace }}/docs/fdroid/repo
 
       # Rename Android APK
       - name: Rename Android APK
