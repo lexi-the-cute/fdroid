@@ -108,8 +108,8 @@ jobs:
       # Rename Android APK
       - name: Rename Android APK
         run: |
-          export VERSION=`apkanalyzer manifest version-name ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine.apk`
-          mv ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine.apk ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine-v$VERSION.apk 
+          export VERSION=`apkanalyzer manifest version-name ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine-fat.apk`
+          mv ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine-fat.apk ${{ github.workspace }}/docs/fdroid/repo/catgirl-engine-fat-v$VERSION.apk
 
       # FDroid Update
       - name: FDroid Update
