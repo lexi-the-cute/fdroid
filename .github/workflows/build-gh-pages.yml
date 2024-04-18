@@ -131,7 +131,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/docs
           mkdir -p archive/fdroid
-          mv fdroid/archive archive/fdroid/repo
+          cp -a fdroid/archive archive/fdroid/repo
 
       # Remove Secret Key and Config
       - name: Remove Secret Key and Config
