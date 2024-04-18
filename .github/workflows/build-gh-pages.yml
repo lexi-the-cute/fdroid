@@ -117,6 +117,15 @@ jobs:
           cd ${{ github.workspace }}/docs/fdroid
           fdroid update
 
+      # FDroid Icon Workaround
+      - name: FDroid Icon Workaround
+        run: |
+          cd ${{ github.workspace }}/docs/fdroid
+          mkdir -p repo/icons
+          mkdir -p archive/icons
+          cp -af icon.png repo/icons/icon.png
+          cp -af icon.png archive/icons/icon.png
+
       # Remove Secret Key and Config
       - name: Remove Secret Key and Config
         run: |
