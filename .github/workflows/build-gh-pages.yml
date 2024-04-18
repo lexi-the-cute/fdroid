@@ -80,7 +80,7 @@ jobs:
       - name: Download Previously Generated Repo
         continue-on-error: false
         run: |
-          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-repo.zip
+          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-repo.zip -O ${{ github.workspace }}/downloaded-generated-repo.zip
           unzip ${{ github.workspace }}/downloaded-generated-repo.zip -d ${{ github.workspace }}/docs/fdroid
           rm ${{ github.workspace }}/downloaded-generated-repo.zip
 
@@ -133,7 +133,7 @@ jobs:
           cp -a ${{ github.workspace }}/docs/fdroid/tmp ${{ github.workspace }}/upload
 
           cd ${{ github.workspace }}/upload
-          zip -9 -y -r ${{ github.workspace }}/generated-docs.zip .
+          zip -9 -y -r ${{ github.workspace }}/generated-repo.zip .
 
       # Delete Previous Release
       - name: 👩‍💻 Delete Previous Release
@@ -175,7 +175,7 @@ jobs:
       - name: 👩‍💻 Publish to Github Release
         run: |
           export VERSION="1.0.0"
-          export ARTIFACT_PATH="${{ github.workspace }}/generated-docs.zip"
+          export ARTIFACT_PATH="${{ github.workspace }}/generated-repo.zip"
           export DISPLAY_LABEL="Generated Repo"
 
           gh release upload v$VERSION "$ARTIFACT_PATH"#"$DISPLAY_LABEL" -R ${{ github.repository }}
