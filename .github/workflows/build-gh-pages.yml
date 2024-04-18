@@ -126,6 +126,13 @@ jobs:
           cp -af icon.png repo/icons/icon.png
           cp -af icon.png archive/icons/icon.png
 
+      # FDroid Repo Patching Fix (Archive)
+      - name: FDroid Repo Patching Fix (Archive)
+        run: |
+          cd ${{ github.workspace }}/docs
+          mkdir -p archive/fdroid
+          mv fdroid/archive archive/fdroid/repo
+
       # Remove Secret Key and Config
       - name: Remove Secret Key and Config
         run: |
