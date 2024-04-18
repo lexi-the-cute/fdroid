@@ -76,13 +76,13 @@ jobs:
           version: 1.0
           execute_install_scripts: true
         
-      # Download Previously Generated Docs
-      - name: Download Previously Generated Docs
+      # Download Previously Generated Repo
+      - name: Download Previously Generated Repo
         continue-on-error: false
         run: |
-          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-docs.zip
-          unzip ${{ github.workspace }}/downloaded-generated-docs.zip -d ${{ github.workspace }}/docs/fdroid
-          rm ${{ github.workspace }}/downloaded-generated-docs.zip
+          wget https://github.com/${{ github.repository }}/releases/latest/download/generated-docs.zip -O ${{ github.workspace }}/downloaded-generated-repo.zip
+          unzip ${{ github.workspace }}/downloaded-generated-repo.zip -d ${{ github.workspace }}/docs/fdroid
+          rm ${{ github.workspace }}/downloaded-generated-repo.zip
 
       # Write Secret Key
       - name: Write Secret Key
@@ -123,8 +123,8 @@ jobs:
           rm ${{ github.workspace }}/docs/fdroid/keystore.p12
           rm ${{ github.workspace }}/docs/fdroid/config.yml
 
-      # Create Docs Zip
-      - name: Create Docs Zip
+      # Create Repo Zip
+      - name: Create Repo Zip
         run: |
           mkdir -p ${{ github.workspace }}/upload
           cp -a ${{ github.workspace }}/docs/fdroid/archive ${{ github.workspace }}/upload
@@ -176,7 +176,7 @@ jobs:
         run: |
           export VERSION="1.0.0"
           export ARTIFACT_PATH="${{ github.workspace }}/generated-docs.zip"
-          export DISPLAY_LABEL="Generated Docs"
+          export DISPLAY_LABEL="Generated Repo"
 
           gh release upload v$VERSION "$ARTIFACT_PATH"#"$DISPLAY_LABEL" -R ${{ github.repository }}
 
